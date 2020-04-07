@@ -21,42 +21,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Sales> _cats;
-  List<Sales> _dogs;
-  List<Sales> _lizards;
-  List<Sales> _birds;
+  List<Sales> _laptops;
+  List<Sales> _desktops;
   List<charts.Series<Sales, String>> _chartData;
 
   void _makeData() {
-    _cats = List<Sales>();
-    _dogs = List<Sales>();
-    _birds = List<Sales>();
-    _lizards = List<Sales>();
+    _laptops = List<Sales>();
+    _desktops = List<Sales>();
     _chartData = List<charts.Series<Sales, String>>();
     final rnd = Random();
-    for (int i = 2018; i < 2021; i++) {
-      _cats.add(Sales(i.toString(), rnd.nextInt(1000)));
-      _dogs.add(Sales(i.toString(), rnd.nextInt(1000)));
-      _birds.add(Sales(i.toString(), rnd.nextInt(1000)));
-      _lizards.add(Sales(i.toString(), rnd.nextInt(1000)));
+    for (int i = 2016; i < 2021; i++) {
+      _laptops.add(Sales(i.toString(), rnd.nextInt(1000)));
+      _desktops.add(Sales(i.toString(), rnd.nextInt(1000)));
     }
+    _chartData.add(
+      charts.Series(
+          id: 'Sales',
+          data: _laptops,
+          domainFn: (Sales sales, _) => sales.year,
+          measureFn: (Sales sales, _) => sales.sales,
+          displayName: 'Sales',
+          colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault),
+    );
 
-    _createCharts(_cats, (_, __) => charts.MaterialPalette.green.shadeDefault);
-    _createCharts(_dogs, (_, __) => charts.MaterialPalette.red.shadeDefault);
-    _createCharts(_birds, (_, __) => charts.MaterialPalette.gray.shadeDefault);
-    _createCharts(
-        _lizards, (_, __) => charts.MaterialPalette.yellow.shadeDefault);
-  }
-
-  void _createCharts(List data, Function clfn) {
     _chartData.add(
       charts.Series(
         id: 'Sales',
-        data: data,
+        data: _desktops,
         domainFn: (Sales sales, _) => sales.year,
         measureFn: (Sales sales, _) => sales.sales,
         displayName: 'Sales',
-        colorFn: clfn,
+        colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+        fillPatternFn: (_, __) => charts.FillPatternType.forwardHatch,
       ),
     );
   }
@@ -78,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Center(
           child: Column(
             children: <Widget>[
-              Text('Animal Sales'),
+              Text('Laptop and Desktop Sales Data'),
               Expanded(
                 child: charts.BarChart(
                   _chartData,

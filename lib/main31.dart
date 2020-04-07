@@ -21,43 +21,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Sales> _cats;
-  List<Sales> _dogs;
-  List<Sales> _lizards;
-  List<Sales> _birds;
+  List<Sales> _data;
   List<charts.Series<Sales, String>> _chartData;
 
   void _makeData() {
-    _cats = List<Sales>();
-    _dogs = List<Sales>();
-    _birds = List<Sales>();
-    _lizards = List<Sales>();
+    _data = List<Sales>();
     _chartData = List<charts.Series<Sales, String>>();
     final rnd = Random();
-    for (int i = 2018; i < 2021; i++) {
-      _cats.add(Sales(i.toString(), rnd.nextInt(1000)));
-      _dogs.add(Sales(i.toString(), rnd.nextInt(1000)));
-      _birds.add(Sales(i.toString(), rnd.nextInt(1000)));
-      _lizards.add(Sales(i.toString(), rnd.nextInt(1000)));
+    for (int i = 2010; i < 2021; i++) {
+      _data.add(
+        Sales(
+          i.toString(),
+          rnd.nextInt(1000),
+        ),
+      );
     }
-
-    _createCharts(_cats, (_, __) => charts.MaterialPalette.green.shadeDefault);
-    _createCharts(_dogs, (_, __) => charts.MaterialPalette.red.shadeDefault);
-    _createCharts(_birds, (_, __) => charts.MaterialPalette.gray.shadeDefault);
-    _createCharts(
-        _lizards, (_, __) => charts.MaterialPalette.yellow.shadeDefault);
-  }
-
-  void _createCharts(List data, Function clfn) {
     _chartData.add(
       charts.Series(
-        id: 'Sales',
-        data: data,
-        domainFn: (Sales sales, _) => sales.year,
-        measureFn: (Sales sales, _) => sales.sales,
-        displayName: 'Sales',
-        colorFn: clfn,
-      ),
+          id: 'Sales',
+          colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
+          data: _data,
+          domainFn: (Sales sales, _) => sales.year,
+          measureFn: (Sales sales, _) => sales.sales,
+          fillPatternFn: (_, __) => charts.FillPatternType.forwardHatch,
+          displayName: 'Sales'),
     );
   }
 
@@ -78,11 +65,11 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Center(
           child: Column(
             children: <Widget>[
-              Text('Animal Sales'),
+              Text('Sales Data'),
               Expanded(
                 child: charts.BarChart(
                   _chartData,
-                  vertical: false,
+                  animate: true,
                 ),
               ),
             ],
