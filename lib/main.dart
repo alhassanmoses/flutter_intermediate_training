@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -9,9 +7,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: MyHomePage(),
     );
   }
@@ -23,29 +18,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Timer _timer;
+  List<Step> _steps;
+  int _current;
+  TextEditingController _nameTextController;
+  TextEditingController _ageTextController;
+  String name;
+  String age;
+  bool _valid = false;
   @override
   void initState() {
-    _timer = Timer.periodic(duration, _timeUp);
+    _current = 0;
+
     super.initState();
   }
 
-  var _time = 0.0;
-//  DateTime timer = DateTime
-  static Duration duration = Duration(milliseconds: 100);
-
-  bool _running = false;
-
-  void _timeUp(Timer timer) {
-    if (!_running) {
-      return;
+  void _stepContinue() {
+    if (_valid == true) {
+      setState(() {
+        _current++;
+        if (_current >= _steps.length) _current = _steps.length - 1;
+      });
     }
+  }
+
+  void _stepCancel() {
     setState(() {
-      _time += 0.01;
-      if (_time >= 1.0) {
-        _running = false;
-//        _timer.cancel();
-      }
+      _current--;
+      if (_current < 0) _current = 0;
+    });
+  }
+
+  void _stepTap(int index) {
+    setState(() {
+      _current = index;
     });
   }
 
@@ -53,43 +58,47 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('InterMediate Course App'),
+        title: Text('live temp'),
       ),
       body: Container(
+        padding: EdgeInsets.all(10.0),
         child: Center(
-          child: Column(
-            children: <Widget>[
-//              Slider(
-//                value: _time,
-//                onChanged: _onChanged,
-//              ),
-              Container(
-                padding: EdgeInsets.all(10.0),
-                child: LinearProgressIndicator(
-                  value: _time,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+          child: Stepper(
+            steps: [
+              Step(
+                title: Text('Please enter your name...'),
+                content: TextField(
+                  onChanged: (val) {
+                    name = val;
+                  },
                 ),
+                isActive: true,
               ),
-              Container(
-                padding: EdgeInsets.all(10.0),
-                child: CircularProgressIndicator(
-                  value: _time,
+              Step(
+                title: Text('Please enter your age...'),
+                content: TextField(
+                  onChanged: (val) {
+                    age = val;
+                  },
+                  keyboardType: TextInputType.numberWithOptions(),
                 ),
+                isActive: true,
               ),
-              SizedBox(
-                height: 30.0,
+              Step(
+                title: Text('Verify your details'),
+                content: Text(
+                  name == null || age == null
+                      ? 'No data provided'
+                      : 'Name: $name and Age: ${int.parse(age)}',
+                ),
+                isActive: true,
               ),
-              RaisedButton(
-                color: Colors.blue,
-                onPressed: () {
-                  setState(() {
-                    _time = 0.0;
-                    _running = true;
-                  });
-                },
-                child: Text('Hit Me'),
-              )
             ],
+            type: StepperType.vertical,
+            currentStep: _current,
+            onStepCancel: _stepCancel,
+            onStepContinue: _stepContinue,
+            onStepTapped: _stepTap,
           ),
         ),
       ),
