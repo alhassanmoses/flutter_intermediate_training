@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import './assignment_4_widget.dart';
+import './global_state.dart';
+import './second_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,6 +10,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       home: MyHomePage(),
+      routes: {
+        '/second': (context) => SecondPage(),
+        '/home': (context) => MyHomePage(),
+      },
     );
   }
 }
@@ -20,44 +24,73 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String name;
-
-  void _onPressed(String val) {
-    setState(() {
-      name = val;
-    });
-  }
-
-  bool _isAuthenticated;
-
-  void _onAuthenticated(bool value) {
-    setState(() => _isAuthenticated = value);
-  }
-
+  GlobalState _store = GlobalState.instance;
+  int _count = 0;
   @override
   void initState() {
-    _isAuthenticated = false;
+    _store.set('number', _count);
+//    String temp;
+
     super.initState();
+  }
+
+  void _onPressed() {
+    setState(() {
+      _store.set('number', _count);
+      Navigator.of(context).pushNamed('/second');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('live temp'),
+        title: Text('Assignment 6'),
       ),
       body: Container(
         padding: EdgeInsets.all(10.0),
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              Ass4Widget(_onPressed),
-              Text(
-                'Name as displayed on parent widget is: $name',
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Increase or decrese value',
+            ),
+            Text(
+              _count.toString(),
+              style: TextStyle(
+                fontSize: 24.0,
               ),
-//              TimeCounter(),
-            ],
-          ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {
+                    setState(() => _count++);
+                  },
+                  icon: Icon(Icons.add),
+                ),
+                SizedBox(
+                  width: 40,
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() => _count--);
+                  },
+                  icon: Icon(Icons.remove),
+                ),
+              ],
+            ),
+            RaisedButton(
+              onPressed: () {
+                setState(() {
+                  _store.set('number', _count);
+                  Navigator.of(context).pushNamed('/second');
+                });
+              },
+              child: Text('Second page'),
+            )
+          ],
         ),
       ),
     );

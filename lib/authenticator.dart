@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-
 class Authenticator extends StatefulWidget {
   final ValueChanged<bool> onAuthenticated;
   Authenticator({Key key, this.onAuthenticated});
